@@ -22,6 +22,7 @@ interface NexusContextType {
   products: Product[];
   orders: Order[];
   users: User[];
+  addProduct: (product: Omit<Product, 'id' | 'sellerId'>) => void;
   updateProduct: (product: Product) => void;
   deleteProduct: (id: string) => void;
 }
@@ -126,6 +127,20 @@ export const NexusProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     return newOrder;
   };
 
+  const addProduct = (productData: Omit<Product, 'id' | 'sellerId'>) => {
+    if (!currentUser || currentUser.role !== UserRole.SELLER) return;
+    
+    const newProduct: Product = {
+      ...productData,
+      id: `PROD-${Date.now()}`,
+      sellerId: currentUser.id
+    };
+    
+    const updatedDb = { ...db, products: [newProduct, ...db.products] };
+    setDb(updatedDb);
+    saveDB(updatedDb);
+  };
+
   const updateProduct = (product: Product) => {
     const updatedProducts = db.products.map(p => p.id === product.id ? product : p);
     const updatedDb = { ...db, products: updatedProducts };
@@ -140,12 +155,11 @@ export const NexusProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     saveDB(updatedDb);
   };
 
-  // Convert JSX to React.createElement as store.ts is not a .tsx file to avoid parsing errors.
   return React.createElement(NexusContext.Provider, {
     value: {
       currentUser, login, signup, logout, cart, addToCart, removeFromCart,
       placeOrder, products: db.products, orders: db.orders, users: db.users,
-      updateProduct, deleteProduct
+      addProduct, updateProduct, deleteProduct
     }
   }, children);
 };
