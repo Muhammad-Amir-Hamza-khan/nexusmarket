@@ -1,0 +1,5 @@
+{
+  "name": "NexusMarket - Pro E-Commerce Platform",
+  "description": "A high-performance e-commerce solution featuring a 3-tier user system (Buyer, Seller, Admin), AI-powered shopping assistance with Gemini, and robust state-driven checkout flows.",
+  "requestFramePermissions": []
+}
